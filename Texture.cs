@@ -17,8 +17,8 @@ public class solid_color : texture {
     }
 
     public solid_color(double red, double green, double blue)
+        : this(new Color(red, green, blue)) // Użyj this() aby wywołać inny konstruktor
     {
-        new solid_color(new Color(red, green, blue));
     }
 
     public override Color value(double u, double v, Point3 p){
@@ -39,8 +39,8 @@ public class checker_texture : texture {
     }
 
     public checker_texture(double scale, Color c1, Color c2)
+        : this(scale, new solid_color(c1), new solid_color(c2))
     {
-        new checker_texture(scale, new solid_color(c1), new solid_color(c2));
     }
 
     public override Color value(double u, double v, Point3 p){

@@ -11,13 +11,19 @@ public class material {
 
 class lambertian : material
 {
+    public texture tex;
     private Color albedo;
 
     public lambertian(Color albedo)
     {
-        this.albedo = albedo;
+        tex = new solid_color(albedo);
     } 
-
+    
+    public lambertian(texture tex)
+    {
+        this.tex = tex;
+    } 
+    
     public override bool scatter(Ray r_in, hit_record rec, ref Color attenuation, ref Ray scattered)
      {
         var scatter_direction = rec.normal + Vec3.random_unit_vector();
@@ -27,7 +33,7 @@ class lambertian : material
             scatter_direction = rec.normal;
         
         scattered = new Ray(rec.p, scatter_direction, r_in.tm);
-        attenuation = albedo;
+        attenuation = tex.value(rec.u, rec.v, rec.p);
         return true;
     }
 };
