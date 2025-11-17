@@ -12,4 +12,8 @@ public static class RandomUtilities
     {
         return min + (max - min) * random.NextDouble();
     }
+    public static int random_int(int min, int max) {
+        // Returns a random integer in [min,max].
+        return (int)(RandomDouble(min, max+1));
+    }
 }

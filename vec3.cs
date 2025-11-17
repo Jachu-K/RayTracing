@@ -2,9 +2,9 @@ namespace RayTracing
 {
     public class Vec3
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+        public double X;
+        public double Y;
+        public double Z;
 
         public Vec3() : this(0, 0, 0) { }
         public Vec3(double x, double y, double z)

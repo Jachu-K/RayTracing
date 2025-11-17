@@ -2,19 +2,31 @@ namespace RayTracing
 {
     public class Ray
     {
-        public Point3 Origin { get; }
-        public Vec3 Direction { get; }
+        public Point3 Origin;
+        public Vec3 Direction;
+        public double tm;
 
+        public Ray(Point3 origin, Vec3 direction, double time)
+        {
+            Origin = origin;
+            Direction = direction;
+            tm = time;
+        }
+        
         public Ray(Point3 origin, Vec3 direction)
         {
             Origin = origin;
             Direction = direction;
+            tm = 0;
         }
 
         public Point3 At(double t)
         {
-            Vec3 result = Origin + Direction * t;
-            return new Point3(result.X, result.Y, result.Z);
+            return new Point3(
+                Origin.X + Direction.X * t,
+                Origin.Y + Direction.Y * t, 
+                Origin.Z + Direction.Z * t
+            );
         }
     }
 }

@@ -26,7 +26,7 @@ class lambertian : material
         if (scatter_direction.near_zero())
             scatter_direction = rec.normal;
         
-        scattered = new Ray(rec.p, scatter_direction);
+        scattered = new Ray(rec.p, scatter_direction, r_in.tm);
         attenuation = albedo;
         return true;
     }
@@ -46,7 +46,7 @@ class metal : material
     public override bool scatter(Ray r_in, hit_record rec, ref Color attenuation, ref Ray scattered){
         Vec3 reflected = Vec3.reflect(r_in.Direction, rec.normal);
         reflected = Vec3.UnitVector(reflected) + (fuzz * Vec3.random_unit_vector());
-        scattered = new Ray(rec.p, reflected);
+        scattered = new Ray(rec.p, reflected, r_in.tm);
         attenuation = albedo;
         return (Vec3.Dot(scattered.Direction, rec.normal) > 0);
     }
@@ -84,7 +84,7 @@ class dielectric : material {
         else
             direction = Vec3.refract(unit_direction, rec.normal, ri);
 
-        scattered = new Ray(rec.p, direction);
+        scattered = new Ray(rec.p, direction, r_in.tm);
         
         return true;
     }

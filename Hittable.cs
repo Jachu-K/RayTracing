@@ -8,6 +8,8 @@ namespace RayTracing
         public material mat;
         public double t;
         public bool front_face;
+        public double u;
+        public double v;
 
         public void set_face_normal(Ray r, Vec3 outward_normal) {
             // Sets the hit record normal vector.
@@ -24,30 +26,75 @@ namespace RayTracing
         {
             return false;
         }
+
+        public virtual aabb bounding_box()
+        {
+            return null;
+        }
     };
-    class sphere : hittable {
-        private Point3 center { get; }
-        private double radius { get; }
+    class sphere : hittable
+    {
+        public Ray center;
+        public double radius;
 
         public material mat;
-        
-        public sphere(Point3 center1, double radius1, material mat1){
-            center = center1;
-            radius = radius1;
+        public aabb bbox;
+
+        public override aabb bounding_box()
+        {
+            return bbox;   
+        }
+
+        // Stationary Sphere
+        public sphere(Point3 static_center, double radius1, material mat1){
+            center = new Ray(static_center, new Vec3(0,0,0));
+            radius = Math.Max(0,radius1);
             mat = mat1;
+
+            var rvec = new Vec3(radius1, radius1, radius1);
+            bbox = new aabb(new Point3(static_center - rvec), new Point3(static_center + rvec));
+        }
+        
+        // Moving Sphere
+        public sphere(Point3 center1, Point3 center2, double radius1, material mat1)
+        {
+            center = new Ray(center1, center2 - center1);
+            radius = double.Max(0,radius1);
+            mat = mat1;
+
+            var rvec = new Vec3(radius1, radius1, radius1);
+            var box1 = new aabb(new Point3(center.At(0) - rvec), new Point3(center.At(0) + rvec));
+            var box2 = new aabb(new Point3(center.At(1) - rvec), new Point3(center.At(1) + rvec));
+            bbox = new aabb(box1, box2);
         }
 
         public override bool hit(Ray r, Interval ray_t, ref hit_record rec) {
-            Vec3 oc = center - r.Origin;
+            /*Vec3 oc = center - r.Origin;
             var a = r.Direction.LengthSquared;
             var h = Vec3.Dot(r.Direction, oc);
-            var c = oc.LengthSquared - radius*radius;
+            var c = oc.LengthSquared - radius*radius;*/
 
-            var discriminant = h*h - a*c;
+            Point3 current_center = center.At(r.tm);
+            
+            // wąskie gardło --> lekka optymalizacja
+            double ocX = current_center.X - r.Origin.X;
+            double ocY = current_center.Y - r.Origin.Y; 
+            double ocZ = current_center.Z - r.Origin.Z;
+    
+            double dirX = r.Direction.X;
+            double dirY = r.Direction.Y;
+            double dirZ = r.Direction.Z;
+    
+            double a = dirX * dirX + dirY * dirY + dirZ * dirZ;
+            double h = ocX * dirX + ocY * dirY + ocZ * dirZ;
+            double c = ocX * ocX + ocY * ocY + ocZ * ocZ - radius * radius;
+            
+
+            double discriminant = h*h - a*c;
             if (discriminant < 0)
                 return false;
 
-            var sqrtd = double.Sqrt(discriminant);
+            double sqrtd = double.Sqrt(discriminant);
 
             // Find the nearest root that lies in the acceptable range.
             var root = (h - sqrtd) / a;
@@ -59,9 +106,14 @@ namespace RayTracing
 
             rec.t = root;
             rec.p = r.At(rec.t);
-            rec.normal = (rec.p - center) / radius;
+            //rec.normal = (rec.p - center) / radius;
+            double normalX = (rec.p.X - current_center.X) / radius;
+            double normalY = (rec.p.Y - current_center.Y) / radius; 
+            double normalZ = (rec.p.Z - current_center.Z) / radius;
+            rec.normal = new Vec3(normalX, normalY, normalZ);
             
-            Vec3 outward_normal = (rec.p - center) / radius;
+            
+            Vec3 outward_normal = new Vec3(normalX, normalY, normalZ);
             rec.set_face_normal(r, outward_normal);
             rec.mat = mat;
 

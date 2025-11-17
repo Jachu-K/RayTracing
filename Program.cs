@@ -29,7 +29,9 @@ class Program
                         // diffuse
                         var albedo = Color.random() * Color.random();
                         sphere_material = new lambertian(new Color(albedo));
-                        world.add(new sphere(center, 0.2, sphere_material));
+                        var temp = center + new Vec3(0, RandomUtilities.RandomDouble(0,.5), 0);
+                        Point3 center2 = new Point3(temp.X, temp.Y, temp.Z);
+                        world.add(new sphere(center,center2, 0.2, sphere_material));
                     } else if (choose_mat < 0.95) {
                         // metal
                         var albedo = Color.random(0.5,1);
@@ -53,14 +55,21 @@ class Program
 
         var material3 = new metal(new Color(0.7, 0.6, 0.5), 0.0);
         world.add(new sphere(new Point3(4, 1, 0), 1.0, material3));
+        
+        world = new hittable_list(new bvh_node(world));
 
         camera cam = new camera();
 
         cam.aspect_ratio      = 16.0 / 9.0;
         cam.image_width       = 1200;
-        cam.samples_per_pixel = 10;
+        cam.samples_per_pixel = 100;
         cam.max_depth         = 50;
 
+        //cam.image_width = 200;
+        //cam.samples_per_pixel = 1; 
+        //cam.max_depth = 2;
+        
+        
         cam.vfov     = 20;
         cam.lookfrom = new Point3(13,2,3);
         cam.lookat   = new Point3(0,0,0);

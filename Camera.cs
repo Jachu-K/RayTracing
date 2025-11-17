@@ -73,7 +73,7 @@ class camera {
             return new Color(0,0,0);
         hit_record rec = new hit_record();
         Vec3 res;
-        if (world.hit(r, new Interval(0.001, Double.PositiveInfinity), ref rec)) {
+        if (world.hit(r,new Interval(0.001, Double.PositiveInfinity), ref rec)) {
             
             Ray scattered = new Ray(new Point3(0,0,0), new Vec3(0,0,0));
             Color attenuation = new Color(0,0,0);
@@ -106,8 +106,9 @@ class camera {
 
         var ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
         var ray_direction = pixel_sample - ray_origin;
+        var ray_time = RandomUtilities.RandomDouble();
 
-        return new Ray(ray_origin, ray_direction);
+        return new Ray(ray_origin, ray_direction, ray_time);
     }
 
     Vec3 sample_square(){
