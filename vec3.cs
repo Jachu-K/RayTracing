@@ -1,11 +1,17 @@
 namespace RayTracing    
 {
-    public class Vec3
+    public struct Vec3
     {
         public double X;
         public double Y;
         public double Z;
 
+        public Vec3(Point3 point)
+        {
+            X = point.X;
+            Y = point.Y;
+            Z = point.Z;
+        }
         public Vec3() : this(0, 0, 0) { }
         public Vec3(double x, double y, double z)
         {
@@ -13,6 +19,8 @@ namespace RayTracing
             Y = y;
             Z = z;
         }
+
+        
 
         // Operator przeciążenia
         public static Vec3 operator -(Vec3 v) => new Vec3(-v.X, -v.Y, -v.Z);
@@ -49,7 +57,7 @@ namespace RayTracing
             a.X * b.Y - a.Y * b.X
         );
         public static Vec3 UnitVector(Vec3 v) => v / v.Length;
-
+        
         public static Vec3 random_in_unit_disk()
         {
             while (true)
@@ -93,11 +101,26 @@ namespace RayTracing
     }
 
     // Aliasy dla lepszej czytelności
-    public class Point3 : Vec3
+    public struct Point3
     {
-        public Point3() : base() { }
-        public Point3(Vec3 v) : base(v.X, v.Y, v.Z) { }
-        public Point3(double x, double y, double z) : base(x, y, z) { }
+        public double X;
+        public double Y;
+        public double Z;
+
+        public Point3()
+        {
+            X = 0;
+            Y = 0;
+            Z = 0;
+        }
+        public Point3(Vec3 v) : this(v.X, v.Y, v.Z) { }
+
+        public Point3(double x, double y, double z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
         
         public double Length => Math.Sqrt(LengthSquared);
         public double LengthSquared => X * X + Y * Y + Z * Z;
@@ -106,15 +129,34 @@ namespace RayTracing
         {
             return new Point3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         }
+        public static Point3 operator +(Point3 a, Point3 b)
+        {
+            return new Point3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
     }
 
-    public class Color : Vec3
+    public struct Color
     {
-        public Color() : base() { }
-        public Color(double r, double g, double b) : base(r, g, b) { }
+        public double X;
+        public double Y;
+        public double Z;
+
+        public Color()
+        {
+            X = 0;
+            Y = 0;
+            Z = 0;
+        }
+
+        public Color(double r, double g, double b)
+        {
+            X = r;
+            Y = g;
+            Z = b;
+        }
         
         // Konwersja z Vec3 na Color
-        public Color(Vec3 v) : base(v.X, v.Y, v.Z) { }
+        public Color(Vec3 v) : this(v.X, v.Y, v.Z) { }
 
         // Operator mnożenia - akceptuje Vec3 i zwraca Color
         public static Color operator *(Color a, Vec3 b)
@@ -152,6 +194,13 @@ namespace RayTracing
         public static Color operator /(Color c, double t)
         {
             return c * (1.0 / t);
+        }
+        
+        public static Color random(double min, double max) {
+            return new Color(RandomUtilities.RandomDouble(min, max), RandomUtilities.RandomDouble(min, max), RandomUtilities.RandomDouble(min, max));
+        }
+        public static Color random() {
+            return new Color(RandomUtilities.RandomDouble(), RandomUtilities.RandomDouble(), RandomUtilities.RandomDouble());
         }
 
     }

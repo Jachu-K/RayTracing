@@ -53,3 +53,56 @@ public class checker_texture : texture {
         return isEven ? even.value(u, v, p) : odd.value(u, v, p);
     }
 };
+
+public class image_texture : texture
+{
+    public image_texture(string filename) : base()
+    {
+        Console.WriteLine($"Loading texture: {filename}");
+        image = new rtw_image(filename);
+        Console.WriteLine($"Texture loaded: {image.width()} x {image.height()}");
+    }
+
+    public override Color value(double u, double v, Point3 p)
+    {
+        // If we have no texture data, then return solid cyan as a debugging aid.
+        if (image.height() <= 0)
+        {
+            Console.WriteLine("No texture data - returning cyan");
+            return new Color(0, 1, 1);
+        }
+
+        // Clamp input texture coordinates to [0,1] x [1,0]
+        u = new Interval(0,1).Clamp(u);
+        v = 1.0 - new Interval(0,1).Clamp(v);  // Flip V to image coordinates
+
+        int i = (int)(u * image.width());
+        int j = (int)(v * image.height());
+        
+        // Debug: print coordinates and pixel indices
+        if (u < 0.1 && v < 0.1) // Print only for first few pixels to avoid spam
+        {
+            Console.WriteLine($"u={u:F3}, v={v:F3} -> i={i}, j={j}");
+        }
+
+        byte[] pixel = image.pixel_data(i, j);
+
+        // Debug: print pixel values
+        if (u < 0.1 && v < 0.1)
+        {
+            Console.WriteLine($"Pixel RGB: {pixel[0]}, {pixel[1]}, {pixel[2]}");
+        }
+
+        double color_scale = 1.0 / 255.0;
+        Color result = new Color(color_scale * pixel[0], color_scale * pixel[1], color_scale * pixel[2]);
+        
+        if (u < 0.1 && v < 0.1)
+        {
+            Console.WriteLine($"Final color: {result.X:F3}, {result.Y:F3}, {result.Z:F3}");
+        }
+
+        return result;
+    }
+
+    private rtw_image image;
+}

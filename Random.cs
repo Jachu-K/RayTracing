@@ -1,5 +1,5 @@
 namespace RayTracing;
-public static class RandomUtilities
+public struct RandomUtilities
 {
     private static Random random = new Random();
     

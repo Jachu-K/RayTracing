@@ -1,6 +1,6 @@
 namespace RayTracing
 {
-    public class Ray
+    public struct Ray
     {
         public Point3 Origin;
         public Vec3 Direction;
@@ -17,6 +17,12 @@ namespace RayTracing
         {
             Origin = origin;
             Direction = direction;
+            tm = 0;
+        }
+        public Ray(Point3 origin, Point3 direction)
+        {
+            Origin = origin;
+            Direction = new Vec3(direction);
             tm = 0;
         }
 

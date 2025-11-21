@@ -60,7 +60,7 @@ class bvh_node : hittable {
         return box_compare(a, b, 0) ? -1 : 1;
     }
 
-    static int box_y_compare(hittable a, hittable b) {
+    static int box_y_compare(hittable a, hittable b) {  
         return box_compare(a, b, 1) ? -1 : 1;
     }
 

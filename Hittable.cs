@@ -51,8 +51,8 @@ namespace RayTracing
             radius = Math.Max(0,radius1);
             mat = mat1;
 
-            var rvec = new Vec3(radius1, radius1, radius1);
-            bbox = new aabb(new Point3(static_center - rvec), new Point3(static_center + rvec));
+            Point3 rvec = new Point3(radius1, radius1, radius1);
+            bbox = new aabb(static_center - rvec, static_center + rvec);
         }
         
         // Moving Sphere
@@ -62,9 +62,9 @@ namespace RayTracing
             radius = double.Max(0,radius1);
             mat = mat1;
 
-            var rvec = new Vec3(radius1, radius1, radius1);
-            var box1 = new aabb(new Point3(center.At(0) - rvec), new Point3(center.At(0) + rvec));
-            var box2 = new aabb(new Point3(center.At(1) - rvec), new Point3(center.At(1) + rvec));
+            var rvec = new Point3(radius1, radius1, radius1);
+            var box1 = new aabb((center.At(0) - rvec), (center.At(0) + rvec));
+            var box2 = new aabb((center.At(1) - rvec), (center.At(1) + rvec));
             bbox = new aabb(box1, box2);
         }
 
@@ -115,11 +115,25 @@ namespace RayTracing
             
             Vec3 outward_normal = new Vec3(normalX, normalY, normalZ);
             rec.set_face_normal(r, outward_normal);
+            get_sphere_uv(new Point3(outward_normal), out rec.u, out rec.v);
             rec.mat = mat;
 
             return true;
         }
 
-        
+        public static void get_sphere_uv(Point3 p, out double u, out double v) {
+            // p: a given point on the sphere of radius one, centered at the origin.
+            // u: returned value [0,1] of angle around the Y axis from X=-1.
+            // v: returned value [0,1] of angle from Y=-1 to Y=+1.
+            //     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
+            //     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
+            //     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
+            var pi = Math.PI;
+            var theta = Math.Acos(-p.Y);
+            var phi = Math.Atan2(-p.Z, p.X) + pi;
+
+            u = phi / (2*pi);
+            v = theta / pi;
+        }
     };
 }

@@ -1,8 +1,11 @@
 using System.Drawing;
 
 namespace RayTracing;
-class camera {
+public struct camera {
     /* Public Camera Parameters Here */
+    public camera()
+    {
+    }
 
     public double aspect_ratio = 1.0;  // Ratio of image width over height
     public int image_width  = 100;  // Rendered image width in pixel count
@@ -44,7 +47,7 @@ class camera {
         
         
         // Calculate u,v,w unit basis vectors
-        w = Vec3.UnitVector(lookfrom - lookat);
+        w = (Vec3.UnitVector(new Vec3(lookfrom - lookat)));
         u = Vec3.UnitVector(Vec3.Cross(vup, w));
         v = Vec3.Cross(w,u);
         
@@ -57,7 +60,7 @@ class camera {
          pixel_delta_v = viewport_v / image_height;
 
         // Calculate the location of the upper left pixel.
-        var viewport_upper_left = center - (focus_dist * w) - viewport_u/2 - viewport_v/2;
+        var viewport_upper_left = new Vec3( center )- (focus_dist * w) - viewport_u/2 - viewport_v/2;
         var Npixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
         pixel00_loc = new Point3(Npixel00_loc.X, Npixel00_loc.Y, Npixel00_loc.Z);
         
@@ -72,7 +75,7 @@ class camera {
         if (depth <= 0)
             return new Color(0,0,0);
         hit_record rec = new hit_record();
-        Vec3 res;
+        
         if (world.hit(r,new Interval(0.001, Double.PositiveInfinity), ref rec)) {
             
             Ray scattered = new Ray(new Point3(0,0,0), new Vec3(0,0,0));
@@ -91,8 +94,8 @@ class camera {
 
         Vec3 unit_direction = Vec3.UnitVector(r.Direction);
         var a = 0.5*(unit_direction.Y + 1.0);
-        res =  (1.0-a)* new Color(1.0, 1.0, 1.0) + a* new Color(0.5, 0.7, 1.0);
-        return new Color(res.X, res.Y, res.Z);
+        var res =  (1.0-a)* new Color(1.0, 1.0, 1.0) + a* new Color(0.5, 0.7, 1.0);
+        return res;
     }
     
     Ray get_ray(int i, int j){
@@ -100,12 +103,14 @@ class camera {
         // point around the pixel location i, j.
 
         var offset = sample_square();
-        var pixel_sample = pixel00_loc
+        Vec3 pixel100new = new Vec3(pixel00_loc);
+        var pixel_sample = pixel100new
                             + ((i + offset.X) * pixel_delta_u)
                             + ((j + offset.Y) * pixel_delta_v);
 
         var ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
-        var ray_direction = pixel_sample - ray_origin;
+        Vec3 ray_ornew = new Vec3(ray_origin);
+        var ray_direction = pixel_sample - ray_ornew;
         var ray_time = RandomUtilities.RandomDouble();
 
         return new Ray(ray_origin, ray_direction, ray_time);
@@ -120,12 +125,42 @@ class camera {
     {
         // Returns a random point in the camera defocus disk
         var p = Vec3.random_in_unit_disk();
-        return new Point3( center + (p.X * defocus_disk_u) + (p.Y * defocus_disk_v));
+        return new Point3( new Vec3(center) + (p.X * defocus_disk_u) + (p.Y * defocus_disk_v));
     }
     public void render(hittable world) {
         initialize();
 
         using (StreamWriter writer = new StreamWriter("image.ppm"))
+        {
+            writer.WriteLine("P3");
+            writer.WriteLine($"{image_width} {image_height}");
+            writer.WriteLine("255");
+
+            for (int j = 0; j < image_height; j++)
+            {
+                Console.WriteLine($"\rScanlines remaining: {image_height - j} ");
+                for (int i = 0; i < image_width; i++)
+                {
+                    Color pixel_color = new Color(0, 0, 0);
+                    for (int sample = 0; sample < samples_per_pixel; sample++) 
+                    {
+                        Ray r = get_ray(i, j);
+                        pixel_color += ray_color(r, max_depth, world);
+                    }
+
+                    pixel_color *= pixel_samples_scale;
+                    ColorUtilities.WriteColor(writer, pixel_color);
+                }
+            }
+        }
+
+        Console.WriteLine("\rDone.                 ");
+    }
+    
+    public void render(hittable world, string filename) {
+        initialize();
+
+        using (StreamWriter writer = new StreamWriter(filename))
         {
             writer.WriteLine("P3");
             writer.WriteLine($"{image_width} {image_height}");

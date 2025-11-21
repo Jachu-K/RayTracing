@@ -1,6 +1,6 @@
 namespace RayTracing
 {
-    public static class ColorUtilities
+    public struct ColorUtilities
     {
         public static double linear_to_gamma(double linear_component)
         {

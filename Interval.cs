@@ -1,6 +1,6 @@
 namespace RayTracing
 {
-    public class Interval
+    public struct Interval
     {
         public double Min;
         public double Max;
