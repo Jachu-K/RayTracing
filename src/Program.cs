@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using RayTracing;
 
 
@@ -232,11 +232,11 @@ class Program
     {
         var world = new hittable_list();
         
-        var (meshes, materials) = OBJLoader.LoadOBJWithMaterials("cube.obj"); // "pyramid.obj"
+        var (meshes, materials) = OBJLoader.LoadOBJWithMaterials("assets/models/cube.obj"); // "assets/models/pyramid.obj"
         
         if (meshes.Count == 0)
         {
-            Console.WriteLine("ERROR: No meshes loaded from cube.obj");
+            Console.WriteLine("ERROR: No meshes loaded from assets/models/cube.obj");
             return;
         }
 
@@ -302,7 +302,7 @@ class Program
         var world = new hittable_list();
         
         // Po prostu podaj nazwę pliku - loader sam go znajdzie
-        string objFilename = "fg_SpkRabbit.obj"; // tylko nazwa pliku
+        string objFilename = "assets/models/steampunk-rabbit-figurine-free/source/fg_spkRabbit/fg_spkRabbit_cc/fg_spkRabbit.obj";
         
         Console.WriteLine("Searching for OBJ file automatically...");
         var (meshes, materials) = OBJLoader.LoadOBJWithMaterials(objFilename);
@@ -417,7 +417,7 @@ class Program
     static void analyze_model() {
         Console.WriteLine("=== MODEL ANALYSIS ===");
     
-        var (meshes, materials) = OBJLoader.LoadOBJWithMaterials("fg_SpkRabbit.obj");
+        var (meshes, materials) = OBJLoader.LoadOBJWithMaterials("assets/models/steampunk-rabbit-figurine-free/source/fg_spkRabbit/fg_spkRabbit_cc/fg_spkRabbit.obj");
     
         int totalVertices = 0;
         int totalTriangles = 0;
@@ -454,7 +454,7 @@ class Program
         Console.WriteLine("=== RABBIT TEST CORRECTED ===");
         
         var allObjects = new hittable_list();
-        var (meshes, materials) = OBJLoader.LoadOBJWithMaterials("fg_SpkRabbit.obj");
+        var (meshes, materials) = OBJLoader.LoadOBJWithMaterials("assets/models/steampunk-rabbit-figurine-free/source/fg_spkRabbit/fg_spkRabbit_cc/fg_spkRabbit.obj");
         
         int triangleCount = 0;
         foreach (var mesh in meshes)

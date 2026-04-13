@@ -15,3 +15,7 @@ A from-scratch implementation of a ray tracing engine built entirely in C#.
 - Configurable camera and scene setup
 - Multi-threaded rendering
 - PPM image output format
+
+**Project structure:**
+- `src/` - all C# source files
+- `assets/models/` - OBJ models and related resources
